@@ -26,7 +26,7 @@
       <template #default>
         <div
           class="select-trigger"
-          @mouseenter="inputHovering = true"
+          @[mouseEnterEventName]="inputHovering = true"
           @mouseleave="inputHovering = false"
         >
           <div
@@ -458,6 +458,7 @@ export default defineComponent({
       getValueKey,
       navigateOptions,
       dropMenuVisible,
+      mouseEnterEventName,
 
       reference,
       input,
@@ -635,6 +636,7 @@ export default defineComponent({
       navigateOptions,
       dropMenuVisible,
       focus,
+      mouseEnterEventName,
 
       reference,
       input,

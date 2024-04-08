@@ -21,6 +21,7 @@ import {
   debugWarn,
   getComponentSize,
   isFunction,
+  isIOS,
   isKorean,
   isNumber,
   isString,
@@ -195,6 +196,12 @@ export const useSelect = (props, states: States, ctx) => {
       states.visible = val
     },
   })
+
+  // iOS Safari does not handle click events when a mouseenter event is registered and a DOM-change happens in a child
+  // We use a Vue custom event binding to only register the event on non-iOS devices
+  // ref.: https://developer.apple.com/library/archive/documentation/AppleApplications/Reference/SafariWebContent/HandlingEvents/HandlingEvents.html
+  // Github Issue: https://github.com/vuejs/vue/issues/9859
+  const mouseEnterEventName = computed(() => (isIOS ? null : 'mouseenter'))
 
   // watch
   watch(
@@ -803,10 +810,15 @@ export const useSelect = (props, states: States, ctx) => {
   }
 
   const toggleMenu = (e?: PointerEvent) => {
-    if (e && !states.mouseEnter) {
+    if (e && !states.mouseEnter && !isIOS) {
       return
     }
     if (!selectDisabled.value) {
+      // We only set the inputHovering state to true on mouseenter event on iOS devices
+      // To keep the state updated we set it here to true
+      if (isIOS) {
+        states.inputHovering = true
+      }
       if (states.menuVisibleOnFocus) {
         states.menuVisibleOnFocus = false
       } else {
@@ -921,6 +933,7 @@ export const useSelect = (props, states: States, ctx) => {
     dropMenuVisible,
     queryChange,
     groupQueryChange,
+    mouseEnterEventName,
 
     // DOM ref
     reference,
